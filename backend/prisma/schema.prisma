@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customers Customer[]
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  email     String
+  document  String   // CPF or CNPJ
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id])
+  subscriptions Subscription[]
+  payments      Payment[]
+}
+
+model Subscription {
+  id         String   @id @default(uuid())
+  customerId String
+  planName   String
+  price      Float
+  status     String   // "ACTIVE", "CANCELED", "PAST_DUE"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  customer Customer  @relation(fields: [customerId], references: [id])
+  payments Payment[]
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  customerId     String
+  subscriptionId String?
+  amount         Float
+  status         String   // "PENDING", "PAID", "FAILED"
+  dueDate        DateTime
+  paidAt         DateTime?
+  stripeId       String?  // Simulation of external ID
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+}
