@@ -55,5 +55,3 @@ npm run dev
 *(O app rodará em http://localhost:5173)*
 
 ---
-
-*Desenvolvido para demonstração de proficiência sênior em Full Stack, englobando tudo: do Banco de Dados Relacional à Interface de Usuário Dinâmica.*
